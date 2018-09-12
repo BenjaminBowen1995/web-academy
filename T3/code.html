@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>BJSS Web Academy Training Project</title>
+        <style>
+            .running { color: green; }
+            .ending { color: orange; text-decoration: blink;}
+            .done { color: red; }
+        </style>
+    </head>
+    <body>
+        <form>
+            <p>Counter duration:
+                <input type=number name=duration>
+                <button id="start-button">Start</button>
+        </form>
+        <p>Something happens in... <span id="count"></span></p>
+        <script>
+            var countdown = 10;
+ 
+            var startButtonElement = document.querySelector("#start-button");
+            startButtonElement.addEventListener( 'click', startCountdown, false);
+ 
+            function startCountdown(event) {
+                event.preventDefault();
+ 
+                var durationInput = document.forms[0].elements[0];
+                countdown = parseInt(durationInput.value, 10) || 10;
+                continueCountdown();
+            }
+ 
+            function continueCountdown() {
+                var countdownStateClass = "running";
+                var countdownElement = document.getElementById("count");
+                countdownElement.innerText = "" + countdown;
+ 
+                if (countdown > 0) {
+                    if (countdown < 4) {
+                        countdownStateClass = "ending";
+                    }
+                    countdown -= 1;
+                    setTimeout(continueCountdown, 1000);
+                } else {
+                    countdownStateClass = "done";
+                }
+ 
+                countdownElement.className = countdownStateClass;
+            }
+        </script>
+    </body>
+</html>
