@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>BJSS Web Academy Training Project</title>
+        <style>
+            .running { color: green; }
+            .ending { color: orange; text-decoration: blink;}
+            .done { color: red; }
+        </style>
+    </head>
+    <body>
+        <form>
+            <p>Counter duration:
+                <input type=number name=duration>
+                <button id="start-button">Start</button>
+        </form>
+        <p>Something happens in... <span id="count"></span></p>
+        <script>
+            var countdown = 10;
+
+            var startButtonElement = document.querySelector("#start-button");
+            startButtonElement.addEventListener( 'click', startCountdown, false);
+
+            function startCountdown(event) {
+                event.preventDefault();
+
+                var durationInput = document.forms[0].elements[0];
+                countdown = parseInt(durationInput.value, 10) || 10;
+                continueCountdown();
+            }
+
+            function continueCountdown() {
+                var countdownStateClass = "running";
+                var countdownElement = document.getElementById("count");
+                countdownElement.innerText = "" + formatCountdown(countdown);
+
+                if (countdown > 0) {
+                    if (countdown < 4) {
+                        countdownStateClass = "ending";
+                    }
+                    countdown -= 1;
+                    setTimeout(continueCountdown, 1000);
+                } else {
+                    countdownStateClass = "done";
+                }
+
+                countdownElement.className = countdownStateClass;
+            }
+
+            function formatCountdown(countdown) {
+                countdown = parseInt(countdown, 10);
+
+                var breaks = [
+                    [60, 's'],
+                    [60, 'm'],
+                    [24, 'h'],
+                    [countdown, 'd']
+                ];
+
+                var formatted = "";
+
+                do {
+                    var brk = breaks.shift();
+
+                    formatted = "" + countdown % brk[0] + brk[1] + " " + formatted;
+                    countdown = parseInt(countdown / brk[0], 10);
+                } while(countdown > 0 && breaks.length);
+
+                return formatted;
+            }
+        </script>
+    </body>
+</html>
