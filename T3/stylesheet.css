@@ -1,0 +1,14 @@
+.running {
+  color: green;
+  font-size: 100%;
+}
+.ending {
+  color: orange;
+  font-size: 150%;
+  vertical-align: middle;
+}
+.done {
+  color: red;
+  font-size: 300%;
+  vertical-align: middle;
+}
