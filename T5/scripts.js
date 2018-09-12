@@ -1,13 +1,9 @@
 //Script variables
 var countdownFrom = 10;
-var countdownCurrent = countdownFrom;
-var timeRemaining = [0, 0, 0];
-var countdownElement;
+
 
 var secInMin = 60;
 var secInHour = 3600;
-//CSS variables
-var countdownStateClass = "running";
 
 //HTML Elements
 var buttonClick = document.querySelector("#startButton");
@@ -32,23 +28,35 @@ function runFunction(event) {
 
 function performCountdown() {
 
-    countdownElement = [
-        document.getElementById("countH"),
-        document.getElementById("countM"),
-        document.getElementById("countS")
+  //grab my html template
+  var template = document.querySelector('#template');
+  //clone it
+  var newCountdown = template.cloneNode(true);
+  newCountdown.id = null;
+  //place the clone at the top of our "list"
+  template.parentNode.insertBefore(newCountdown, template);
+
+  //get the objects from the HTML
+    var countdownElement = [
+        newCountdown.querySelector(".countH"),
+        newCountdown.querySelector(".countM"),
+        newCountdown.querySelector(".countS"),
+        countdownFrom
     ];
+    var stopButtonElement = newCountdown.querySelector(".stop-button");
+    stopButtonElement.addEventListener('click', stopCountdown, false);
     //assert text content and design to the page
 
-    calcHour();
-    calcMin();
-    calcSec();
+    countdownElement[0].innerText = Math.floor(countdownElement[4]/ secInHour);
+    countdownElement[1].innerHTML = Math.floor(countdownElement[4]/ secInMin) - secInMin * countdownElement[0].innerHTML;
+    countdownElement[2].innerHTML = countdownElement[4] % secInMin;
 
     countdownElement.className = countdownStateClass;
 
     //check if countdown has ended
-    if (countdownCurrent > 0) {
+    if (countdownElement[4] > 0) {
 
-        if (countdownCurrent < 5) {
+        if (countdownElement[4] < 5) {
             //less than 5? make it orange text
             countdownStateClass = "ending";
 
@@ -60,7 +68,7 @@ function performCountdown() {
 
         setTimeout(performCountdown, 100);
         //decrement if not
-        countdownCurrent--;
+        countdownElement[4]--;
 
     } else {
         //0? red text
@@ -68,13 +76,4 @@ function performCountdown() {
 
     }
 
-}
-function calcSec(){
-    countdownElement[2].innerHTML = countdownCurrent % secInMin;
-}
-function calcMin(){
-    countdownElement[1].innerHTML = Math.floor(countdownCurrent/ secInMin) - secInMin * countdownElement[0].innerHTML;
-}
-function calcHour(){
-    countdownElement[0].innerHTML =  Math.floor(countdownCurrent/ secInHour) ;
 }

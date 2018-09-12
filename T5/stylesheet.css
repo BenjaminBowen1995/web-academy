@@ -12,3 +12,7 @@
   font-size: 300%;
   vertical-align: middle;
 }
+
+#template {
+  display: none;
+}

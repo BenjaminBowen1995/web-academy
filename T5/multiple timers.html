@@ -12,13 +12,15 @@
             <input type="number" name="userinput" id="formTextBox">
             <button id="startButton">Start</button>
         </form>
-       <p>
-         The bomb explodes in T -
-         <span id = "countH">0</span> H ::
-         <span id = "countM">0</span> M ::
-         <span id = "countS">0</span> S
-       </p>
-
+      <div id="template">
+          <p>
+            The counter expires in T -
+            <span class = "countH">0</span> H ::
+            <span class = "countM">0</span> M ::
+            <span class = "countS">0</span> S
+            <button class="stop-button">Stop</button>
+          </p>
+      </div>
        <script src="scripts.js"></script>
      </body>
 </html>
