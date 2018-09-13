@@ -1,7 +1,4 @@
 //Script variables
-var countdownFrom = 10;
-
-
 var secInMin = 60;
 var secInHour = 3600;
 
@@ -11,15 +8,7 @@ buttonClick.addEventListener("click", runFunction, false);
 
 function runFunction(event) {
 
-    event.preventDefault();
 
-    //access our form element
-    var durationInput = document.forms[0].elements[0];
-
-    //if we dont have a var in the form, default it to 10
-    countdownFrom = parseInt(durationInput.value, 10) || 10;
-
-    countdownCurrent = countdownFrom;
 
     performCountdown();
 
@@ -28,52 +17,73 @@ function runFunction(event) {
 
 function performCountdown() {
 
-  //grab my html template
-  var template = document.querySelector('#template');
-  //clone it
-  var newCountdown = template.cloneNode(true);
-  newCountdown.id = null;
-  //place the clone at the top of our "list"
-  template.parentNode.insertBefore(newCountdown, template);
+    event.preventDefault();
 
-  //get the objects from the HTML
+    //access our form element
+    var durationInput = document.forms[0].elements[0];
+
+    //if we dont have a var in the form, default it to 10
+    var countdownFrom = parseInt(durationInput.value, 10) || 10;
+
+    //grab my html template and clone it
+    var template = document.querySelector('#template');
+    var newCountdown = template.cloneNode(true);
+    newCountdown.id = null;
+    //place the clone at the top of our "list"
+    template.parentNode.insertBefore(newCountdown, template);
+
+    //get the objects from the HTML
     var countdownElement = [
         newCountdown.querySelector(".countH"),
         newCountdown.querySelector(".countM"),
         newCountdown.querySelector(".countS"),
         countdownFrom
     ];
-    var stopButtonElement = newCountdown.querySelector(".stop-button");
+    //get stop button, add event listener
+    var stopButtonElement = newCountdown.querySelector(".stopButton");
     stopButtonElement.addEventListener('click', stopCountdown, false);
-    //assert text content and design to the page
 
-    countdownElement[0].innerText = Math.floor(countdownElement[4]/ secInHour);
-    countdownElement[1].innerHTML = Math.floor(countdownElement[4]/ secInMin) - secInMin * countdownElement[0].innerHTML;
-    countdownElement[2].innerHTML = countdownElement[4] % secInMin;
 
-    countdownElement.className = countdownStateClass;
 
-    //check if countdown has ended
-    if (countdownElement[4] > 0) {
+    function countdownLoop() {
 
-        if (countdownElement[4] < 5) {
-            //less than 5? make it orange text
-            countdownStateClass = "ending";
+        var countdownStateClass = "running";
+        countdownElement.className = countdownStateClass;
+
+        //assert text content and design to the page
+        countdownElement[0].innerHTML = Math.floor(countdownElement[3] / secInHour);
+        countdownElement[1].innerHTML = Math.floor(countdownElement[3] / secInMin) - secInMin * countdownElement[0].innerHTML;
+        countdownElement[2].innerHTML = countdownElement[3] % secInMin;
+
+        //check if countdown has ended
+        if (countdownElement[3] > 0) {
+
+            if (countdownElement[3] < 5) {
+                //less than 5? make it orange text
+                countdownStateClass = "ending";
+
+            } else {
+                //5 or more? green text
+                countdownStateClass = "running";
+
+            }
+
+            countdownElement[3] -= 1;
+            setTimeout(countdownLoop, 1000);
+            //decrement if not
 
         } else {
-            //5 or more? green text
-            countdownStateClass = "running";
+            //0? red text
+            countdownStateClass = "done";
 
         }
-
-        setTimeout(performCountdown, 100);
-        //decrement if not
-        countdownElement[4]--;
-
-    } else {
-        //0? red text
-        countdownStateClass = "done";
-
     }
 
+    function stopCountdown(event) {
+
+        event.preventDefault();
+        countdown = 0;
+        template.parentNode.removeChild(newCountdown);
+
+    }
 }
