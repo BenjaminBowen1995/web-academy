@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>BJSS Web Academy Training Project</title>
+        <style>
+            #countdownTemplate { display: none; }
+
+            .running { color: green; }
+            .ending { color: orange; text-decoration: blink;}
+            .done { color: red; }
+        </style>
+    </head>
+    <body>
+        <form>
+            <p>Counter duration:
+                <input type=number name=duration>
+                <button id="start-button">Start</button>
+        </form>
+        <div id="countdownTemplate">
+            <p>
+                Something happens in... <span class="count"></span>
+                <button class="stop-button">Stop</button>
+            </p>
+        </div>
+        <script>
+            loadCountdowns();
+
+            var countdown = 10;
+
+            var startButtonElement = document.querySelector("#start-button");
+            startButtonElement.addEventListener('click', startButtonPressed, false);
+
+            function startButtonPressed(event) {
+                event.preventDefault();
+
+                var durationInput = document.forms[0].elements[0];
+                var countdown = parseInt(durationInput.value, 10) || 10;
+
+                startCountdown(countdown);
+            }
+
+            function startCountdown(duration) {
+                var countdown = duration;
+
+                var template = document.querySelector('#countdownTemplate');
+                var newCountdown = template.cloneNode(true);
+                newCountdown.removeAttribute("id");
+
+                template.parentNode.insertBefore(newCountdown, template);
+                var countdownElement = newCountdown.querySelector(".count");
+
+                var stopButtonElement = newCountdown.querySelector(".stop-button");
+                stopButtonElement.addEventListener('click', stopCountdown, false);
+
+                function continueCountdown() {
+                    var countdownStateClass = "running";
+                    countdownElement.innerText = "" + formatCountdown(countdown);
+                    countdownElement.setAttribute('count', countdown);
+
+                    if (countdown > 0) {
+                        if (countdown < 4) {
+                            countdownStateClass = "ending";
+                        }
+                        countdown -= 1;
+                        setTimeout(continueCountdown, 1000);
+                    } else {
+                        countdownStateClass = "done";
+                    }
+
+                    countdownElement.className = "count " + countdownStateClass;
+
+                    saveCountdowns();
+                }
+
+                function stopCountdown(event) {
+                    event.preventDefault();
+                    countdown = 0;
+                    template.parentNode.removeChild(newCountdown);
+                }
+
+                continueCountdown();
+            }
+
+            function formatCountdown(countdown) {
+                countdown = parseInt(countdown, 10);
+
+                var breaks = [
+                    [60, 's'],
+                    [60, 'm'],
+                    [24, 'h'],
+                    [countdown, 'd']
+                ];
+
+                var formatted = "";
+
+                do {
+                    var brk = breaks.shift();
+
+                    formatted = "" + countdown % brk[0] + brk[1] + " " + formatted;
+                    countdown = parseInt(countdown / brk[0], 10);
+                } while(countdown > 0 && breaks.length);
+
+                return formatted;
+            }
+
+            function saveCountdowns() {
+                var allCounterElements = document.querySelectorAll(".count");
+                var allCounters = [];
+
+                for(var i = 0; i < allCounterElements.length; i++) {
+                    var counterElement = allCounterElements.item(i);
+
+                    if (counterElement.hasAttribute("count")) {
+                        var count = parseInt(counterElement.attributes["count"].value, 10);
+                        if (count) {
+                            allCounters.push(count);
+                        }
+                    }
+                }
+
+                window.localStorage.setItem("countdowns", JSON.stringify(allCounters));
+            }
+
+            function loadCountdowns() {
+                var allCounters = JSON.parse(window.localStorage.getItem("countdowns"));
+                if (allCounters && allCounters.forEach) {
+                    allCounters.forEach(startCountdown);
+                }
+            }
+        </script>
+    </body>
+</html>
