@@ -43,17 +43,16 @@ function performCountdown() {
     var stopButtonElement = newCountdown.querySelector(".stopButton");
     stopButtonElement.addEventListener('click', stopCountdown, false);
 
-
+    countdownLoop();
 
     function countdownLoop() {
 
         var countdownStateClass = "running";
-        countdownElement.className = countdownStateClass;
 
         //assert text content and design to the page
-        countdownElement[0].innerHTML = Math.floor(countdownElement[3] / secInHour);
-        countdownElement[1].innerHTML = Math.floor(countdownElement[3] / secInMin) - secInMin * countdownElement[0].innerHTML;
-        countdownElement[2].innerHTML = countdownElement[3] % secInMin;
+        countdownElement[0].innerText = Math.floor(countdownElement[3] / secInHour);
+        countdownElement[1].innerText = Math.floor(countdownElement[3] / secInMin) - secInMin * countdownElement[0].innerHTML;
+        countdownElement[2].innerText = countdownElement[3] % secInMin;
 
         //check if countdown has ended
         if (countdownElement[3] > 0) {
@@ -77,6 +76,9 @@ function performCountdown() {
             countdownStateClass = "done";
 
         }
+
+        countdownElement.className = countdownStateClass;
+
     }
 
     function stopCountdown(event) {
