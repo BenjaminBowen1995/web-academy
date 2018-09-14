@@ -19,7 +19,7 @@ function performCountdown() {
     var countdownFrom = parseInt(durationInput.value, 10) || 10;
 
     //grab my html template and clone it
-    var template = document.querySelector('#template');
+    var template = document.querySelector("#template");
     var newCountdown = template.cloneNode(true);
     newCountdown.id = null;
     //place the clone at the top of our "list"
@@ -34,7 +34,7 @@ function performCountdown() {
     ];
     //get stop button, add event listener
     var stopButtonElement = newCountdown.querySelector(".stopButton");
-    stopButtonElement.addEventListener('click', stopCountdown, false);
+    stopButtonElement.addEventListener("click", stopCountdown, false);
 
     countdownLoop();
 
@@ -72,6 +72,7 @@ function performCountdown() {
 
         countdownElement.className = countdownStateClass;
 
+
         cacheCountdowns();
 
     }
@@ -93,23 +94,24 @@ function cacheCountdowns(){
     var allCounterElementsM = document.querySelectorAll(".countM");
     var allCounterElementsH = document.querySelectorAll(".countH");
 
-    for(var i = 0; i < allCounterElements.length; i++) {
+    for(var i = 0; i < allCounterElementsS.length; i++) {
 
         var counterElementS = allCounterElementsS.item(i);
         var counterElementM = allCounterElementsM.item(i);
         var counterElementH = allCounterElementsH.item(i);
 
-        if (counterElementS.hasAttribute("countS") &&
-        ounterElementM.hasAttribute("countM") &&
-        ounterElementH.hasAttribute("countH")) {
-
+        console.log(counterElementS, counterElementS.hasAttribute("countS"));
+        if (
+        counterElementS.hasAttribute("countS") ||
+        counterElementM.hasAttribute("countM") ||
+        counterElementH.hasAttribute("countH")) {
+console.log("fff");
             var count =
             [parseInt(counterElementS.attributes["countS"].value, 10),
             parseInt(counterElementM.attributes["countM"].value, 10),
-            parseInt(counterElementH.attributes["countH"].value, 10)]
+            parseInt(counterElementH.attributes["countH"].value, 10)];
 
             if (count) {
-
                 allCounters.push(count);
 
             }
@@ -117,18 +119,19 @@ function cacheCountdowns(){
         }
 
         window.localStorage.setItem("countdowns", JSON.stringify(allCounters));
+        //console.log(window.localStorage.getItem('countdowns'));
 
     }
-    
+
 }
 
 function recoverCountdowns(){
-
+console.log(window.localStorage.getItem("countdowns"));
   var allCounters = JSON.parse(window.localStorage.getItem("countdowns"));
 
   if (allCounters && allCounters.forEach) {
 
-      allCounters.forEach(startCountdown);
+      allCounters.forEach(performCountdown);
 
   }
 

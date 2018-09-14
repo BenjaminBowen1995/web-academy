@@ -1,3 +1,5 @@
+
+
 //Script variables
 var secInMin = 60;
 var secInHour = 3600;
@@ -119,7 +121,7 @@ function cacheCountdowns(){
         window.localStorage.setItem("countdowns", JSON.stringify(allCounters));
 
     }
-    
+
 }
 
 function recoverCountdowns(){
