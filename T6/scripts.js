@@ -1,22 +1,32 @@
-//Script variables
+recoverCountdowns();
+
 var secInMin = 60;
 var secInHour = 3600;
 
-//HTML Elements
 var buttonClick = document.querySelector("#startButton");
-buttonClick.addEventListener("click", performCountdown, false);
+buttonClick.addEventListener("click", startButtonPressed, false);
 
-recoverCountdowns();
-
-function performCountdown() {
-
+function startButtonPressed(event) {
     event.preventDefault();
 
     //access our form element
-    var durationInput = document.forms[0].elements[0];
+    var durationInputH = document.forms[0].elements[0];
+    var durationInputM = document.forms[0].elements[1];
+    var durationInputS = document.forms[0].elements[2];
 
+    //value is in base 10
     //if we dont have a var in the form, default it to 10
-    var countdownFrom = parseInt(durationInput.value, 10) || 10;
+    var countdownFrom =   [
+      parseInt(durationInputH.value, 10) || 0,
+      parseInt(durationInputM.value, 10) || 0,
+      parseInt(durationInputS.value, 10) || 10];
+
+    performCountdown(countdownFrom);
+}
+
+function performCountdown(duration) {
+
+    var countdownFrom = duration;
 
     //grab my html template and clone it
     var template = document.querySelector("#template");
@@ -29,8 +39,7 @@ function performCountdown() {
     var countdownElement = [
         newCountdown.querySelector(".countH"),
         newCountdown.querySelector(".countM"),
-        newCountdown.querySelector(".countS"),
-        countdownFrom
+        newCountdown.querySelector(".countS")
     ];
     //get stop button, add event listener
     var stopButtonElement = newCountdown.querySelector(".stopButton");
@@ -39,18 +48,26 @@ function performCountdown() {
     countdownLoop();
 
     function countdownLoop() {
-
         var countdownStateClass = "running";
 
+        countdownElement[0].setAttribute('countH', countdownFrom[0]);
+        countdownElement[1].setAttribute('countM', countdownFrom[1]);
+        countdownElement[2].setAttribute('countS', countdownFrom[2]);
+
         //assert text content and design to the page
-        countdownElement[0].innerText = Math.floor(countdownElement[3] / secInHour);
-        countdownElement[1].innerText = Math.floor(countdownElement[3] / secInMin) - secInMin * countdownElement[0].innerHTML;
-        countdownElement[2].innerText = countdownElement[3] % secInMin;
+        countdownElement[0].innerText = countdownFrom[0];
+        countdownElement[1].innerText = countdownFrom[1];
+        countdownElement[2].innerText = countdownFrom[2];
 
         //check if countdown has ended
-        if (countdownElement[3] > 0) {
+        if (
+            countdownFrom[0] > 0 ||
+            countdownFrom[1] > 0 ||
+            countdownFrom[2] > 0) {
 
-            if (countdownElement[3] < 5) {
+            if (countdownFrom[0] === 0 &&
+                countdownFrom[1] === 0 &&
+                countdownFrom[2] < 5) {
                 //less than 5? make it orange text
                 countdownStateClass = "ending";
 
@@ -60,56 +77,83 @@ function performCountdown() {
 
             }
 
-            countdownElement[3] -= 1;
-            setTimeout(countdownLoop, 1000);
-            //decrement if not
-
         } else {
-            //0? red text
-            countdownStateClass = "done";
+                //0? red text
+                countdownStateClass = "done";
 
         }
 
-        countdownElement.className = countdownStateClass;
+            countdownElement.className = countdownStateClass;
+
+            decrement();
+
+            cacheCountdowns();
+
+        }
+
+        function decrement(){
+
+          //if we have seconds, decrement seconds
+          if (countdownFrom[2] > 0) {
+              countdownFrom[2] -= 1;
+          }
+          //if we dont have seconds
+          else if (countdownFrom[2] == 0) {
+              //check if we have minutes
+              if (countdownFrom[1] > 0) {
+                  //if we have minutes decrement minute
+                  //and give us 59 more seconds
+                  countdownFrom[1] -= 1;
+                  countdownFrom[2] = 59;
+                  //if we dont have a minutes
+                  //check if we have an hour
+              } else if (countdownFrom[1] == 0) {
+                  if (countdownFrom[0] > 0) {
+                      //if we have an hour, give 59 minutes
+                      //and 59 seconds
+                      countdownFrom[0] -= 1;
+                      countdownFrom[1] = 59;
+                      countdownFrom[2] = 59;
+                  }
+              }
+          }
+
+              setTimeout(countdownLoop, 1000);
 
 
-        cacheCountdowns();
+        }
 
-    }
+        function stopCountdown(event) {
 
-    function stopCountdown(event) {
+            event.preventDefault();
+            countdown = 0;
+            template.parentNode.removeChild(newCountdown);
 
-        event.preventDefault();
-        countdown = 0;
-        template.parentNode.removeChild(newCountdown);
-
-    }
-
+        }
 }
 
-function cacheCountdowns(){
+function cacheCountdowns() {
 
     var allCounters = [];
-    var allCounterElementsS = document.querySelectorAll(".countS");
+    var allCounterElementsS = document.querySelectorAll(".countH");
     var allCounterElementsM = document.querySelectorAll(".countM");
-    var allCounterElementsH = document.querySelectorAll(".countH");
+    var allCounterElementsH = document.querySelectorAll(".countS");
 
-    for(var i = 0; i < allCounterElementsS.length; i++) {
+    for (var i = 0; i < allCounterElementsS.length; i++) {
 
-        var counterElementS = allCounterElementsS.item(i);
-        var counterElementM = allCounterElementsM.item(i);
         var counterElementH = allCounterElementsH.item(i);
+        var counterElementM = allCounterElementsM.item(i);
+        var counterElementS = allCounterElementsS.item(i);
 
-        console.log(counterElementS, counterElementS.hasAttribute("countS"));
         if (
-        counterElementS.hasAttribute("countS") ||
-        counterElementM.hasAttribute("countM") ||
-        counterElementH.hasAttribute("countH")) {
-console.log("fff");
-            var count =
-            [parseInt(counterElementS.attributes["countS"].value, 10),
-            parseInt(counterElementM.attributes["countM"].value, 10),
-            parseInt(counterElementH.attributes["countH"].value, 10)];
+            counterElementS.hasAttribute("countH") ||
+            counterElementM.hasAttribute("countM") ||
+            counterElementH.hasAttribute("countS")) {
+
+            var count = [parseInt(counterElementS.attributes["countH"].value, 0),
+                parseInt(counterElementM.attributes["countM"].value, 0),
+                parseInt(counterElementH.attributes["countS"].value, 0)
+            ];
 
             if (count) {
                 allCounters.push(count);
@@ -118,21 +162,19 @@ console.log("fff");
 
         }
 
-        window.localStorage.setItem("countdowns", JSON.stringify(allCounters));
-        //console.log(window.localStorage.getItem('countdowns'));
-
     }
+
+    window.localStorage.setItem("countdowns", JSON.stringify(allCounters));
 
 }
 
-function recoverCountdowns(){
-console.log(window.localStorage.getItem("countdowns"));
-  var allCounters = JSON.parse(window.localStorage.getItem("countdowns"));
+function recoverCountdowns() {
+    var allCounters = JSON.parse(window.localStorage.getItem("countdowns"));
 
-  if (allCounters && allCounters.forEach) {
+    if (allCounters && allCounters.forEach) {
 
-      allCounters.forEach(performCountdown);
+        allCounters.forEach(performCountdown);
 
-  }
+    }
 
 }
