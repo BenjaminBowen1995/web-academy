@@ -1,4 +1,3 @@
-
 recoverCountdowns();
 
 var secInMin = 60;

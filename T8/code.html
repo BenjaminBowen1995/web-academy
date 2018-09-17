@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>BJSS Web Academy Training Project</title>
+        <link rel="stylesheet"
+              href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+              integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+              crossorigin="anonymous">
+        <style>
+            #countdownTemplate { display: none; }
+ 
+            .running { color: green; }
+            .ending { color: orange; text-decoration: blink;}
+            .done { color: red; }
+        </style>
+    </head>
+    <body class="container">
+        <div class="row">
+            <form class="form-inline col-md-12">
+                <div class="form-group">
+                    <label>Countdown to</label>
+                    <input type=text name=description placeholder="Something" class="form-control">
+                </div>
+                in
+                <div class="form-group">
+                    <input type=number name=duration placeholder=10 class="form-control">
+                    <label>seconds</label>
+                </div>
+                <button type=submit class="btn btn-default" id="start-button">Start</button>
+            </form>
+        </div>
+        <div id="countdownTemplate" class="countdown row">
+            <p class="col-md-12">
+                <span class="description"></span> happens in... <span class="count"></span>
+                <button class="stop-button btn btn-warning btn-sm">Stop</button>
+            </p>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+                integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+                crossorigin="anonymous"></script>
+        <script>
+        $(function() {
+ 
+            loadCountdowns();
+ 
+            $("#start-button").on('click', startButtonPressed);
+ 
+            function startButtonPressed() {
+                var description = $("input[name=description]").val();
+                var countdown = parseInt($("input[name=duration]").val(), 10) || 10;
+                var endDateTime = Date.now() + countdown*1000;
+ 
+                startCountdown(endDateTime, description);
+ 
+                return false;
+            }
+ 
+            function startCountdown(endDateTime, description) {
+                if (currentCountdown(endDateTime) <= 0) return;
+ 
+                description = description || "Something";
+ 
+                var template = $('#countdownTemplate');
+                var newCountdown = template.clone().removeAttr("id").insertBefore(template);
+ 
+                var countdownElement = $(".count", newCountdown);
+                countdownElement.attr("endDateTime", endDateTime);
+ 
+                $(".description", newCountdown).html(description);
+                $(".stop-button", newCountdown).on('click', stopCountdown);
+ 
+                function continueCountdown() {
+                    var countdownStateClass = "running";
+                    var countdown = currentCountdown(endDateTime);
+                    countdownElement.text(formatCountdown(countdown));
+ 
+                    if (countdown > 0) {
+                        if (countdown < 4) {
+                            countdownStateClass = "ending";
+                        }
+                        setTimeout(continueCountdown, 500);
+                    } else {
+                        countdownStateClass = "done";
+                    }
+ 
+                    countdownElement.removeClass().addClass("count " + countdownStateClass);
+                }
+ 
+                function stopCountdown() {
+                    newCountdown.remove();
+                    saveCountdowns();
+                    return false;
+                }
+ 
+                saveCountdowns();
+                continueCountdown();
+            }
+ 
+            function formatCountdown(countdown) {
+                var breaks = [
+                    [60, 's'],
+                    [60, 'm'],
+                    [24, 'h'],
+                    [countdown, 'd']
+                ];
+ 
+                var formatted = "";
+ 
+                do {
+                    var brk = breaks.shift();
+ 
+                    formatted = "" + countdown % brk[0] + brk[1] + " " + formatted;
+                    countdown = parseInt(countdown / brk[0], 10);
+                } while(countdown > 0 && breaks.length);
+ 
+                return formatted;
+            }
+ 
+            function saveCountdowns() {
+                var allCounters = $(".countdown:has(.description):has(.count[endDateTime])").map(function () {
+                    return {
+                        endDateTime: parseInt($(".count", this).attr("endDateTime"), 10),
+                        description: $(".description", this).html()
+                    };
+                }).get().filter(function (counter) {
+                    return counter.endDateTime > Date.now();
+                });
+ 
+                window.localStorage.setItem("countdowns", JSON.stringify(allCounters));
+            }
+ 
+            function loadCountdowns() {
+                var allCounters = JSON.parse(window.localStorage.getItem("countdowns"));
+                if (allCounters.forEach) {
+                    allCounters.forEach(function (counter) {
+                        startCountdown(counter.endDateTime, counter.description);
+                    });
+                }
+            }
+ 
+            function currentCountdown(endDateTime) {
+                return parseInt((endDateTime - Date.now()) / 1000, 10);
+            }
+        });
+        </script>
+    </body>
+</html>
