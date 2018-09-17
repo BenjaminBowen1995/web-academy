@@ -12,27 +12,20 @@
     </head>
     <body>
 
-        <form class="form-inline">
+        <form>
             Input timer duration:
             <input type="number" class = "col-xs-4 col-md-2 small"
-            name="userinputH" placeholder="Hour">
-            <input type="number" class = "col-xs-4 col-md-2 small"
-            name="userinputM" placeholder="Minute">
-            <input type="number" class = "col-xs-4 col-md-2 small"
-            name="userinputS" placeholder="Second">
+            name="userInput" placeholder="Second">
             <button id="startButton" class="btn btn-primary">Start</button>
             <button id="clearButton" class="btn btn-danger">Clear</button>
         </form>
       <div id="template">
           <p>
-            The counter expires in T -
-            <span class = "countH">0</span> H ::
-            <span class = "countM">0</span> M ::
-            <span class = "countS">0</span> S
+            The counter expires in T - <span class = "count">0</span>
             <button class = "stopButton">Stop</button>
           </p>
       </div>
-       <script src="scripts.js"></script>
+
        <script
        src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -45,5 +38,6 @@
        src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
        crossorigin="anonymous"></script>
+       <script src="scripts.js"></script>
      </body>
 </html>

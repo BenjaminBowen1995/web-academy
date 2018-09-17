@@ -9,7 +9,7 @@
               crossorigin="anonymous">
         <style>
             #countdownTemplate { display: none; }
- 
+
             .running { color: green; }
             .ending { color: orange; text-decoration: blink;}
             .done { color: red; }
@@ -41,40 +41,40 @@
                 crossorigin="anonymous"></script>
         <script>
         $(function() {
- 
+
             loadCountdowns();
- 
+
             $("#start-button").on('click', startButtonPressed);
- 
+
             function startButtonPressed() {
                 var description = $("input[name=description]").val();
                 var countdown = parseInt($("input[name=duration]").val(), 10) || 10;
                 var endDateTime = Date.now() + countdown*1000;
- 
+
                 startCountdown(endDateTime, description);
- 
+
                 return false;
             }
- 
+
             function startCountdown(endDateTime, description) {
                 if (currentCountdown(endDateTime) <= 0) return;
- 
+
                 description = description || "Something";
- 
+
                 var template = $('#countdownTemplate');
                 var newCountdown = template.clone().removeAttr("id").insertBefore(template);
- 
+
                 var countdownElement = $(".count", newCountdown);
                 countdownElement.attr("endDateTime", endDateTime);
- 
+
                 $(".description", newCountdown).html(description);
                 $(".stop-button", newCountdown).on('click', stopCountdown);
- 
+
                 function continueCountdown() {
                     var countdownStateClass = "running";
                     var countdown = currentCountdown(endDateTime);
                     countdownElement.text(formatCountdown(countdown));
- 
+
                     if (countdown > 0) {
                         if (countdown < 4) {
                             countdownStateClass = "ending";
@@ -83,20 +83,20 @@
                     } else {
                         countdownStateClass = "done";
                     }
- 
+
                     countdownElement.removeClass().addClass("count " + countdownStateClass);
                 }
- 
+
                 function stopCountdown() {
                     newCountdown.remove();
                     saveCountdowns();
                     return false;
                 }
- 
+
                 saveCountdowns();
                 continueCountdown();
             }
- 
+
             function formatCountdown(countdown) {
                 var breaks = [
                     [60, 's'],
@@ -104,19 +104,19 @@
                     [24, 'h'],
                     [countdown, 'd']
                 ];
- 
+
                 var formatted = "";
- 
+
                 do {
                     var brk = breaks.shift();
- 
+
                     formatted = "" + countdown % brk[0] + brk[1] + " " + formatted;
                     countdown = parseInt(countdown / brk[0], 10);
                 } while(countdown > 0 && breaks.length);
- 
+
                 return formatted;
             }
- 
+
             function saveCountdowns() {
                 var allCounters = $(".countdown:has(.description):has(.count[endDateTime])").map(function () {
                     return {
@@ -126,19 +126,19 @@
                 }).get().filter(function (counter) {
                     return counter.endDateTime > Date.now();
                 });
- 
+
                 window.localStorage.setItem("countdowns", JSON.stringify(allCounters));
             }
- 
+
             function loadCountdowns() {
                 var allCounters = JSON.parse(window.localStorage.getItem("countdowns"));
-                if (allCounters.forEach) {
+                if (allCounters) {
                     allCounters.forEach(function (counter) {
                         startCountdown(counter.endDateTime, counter.description);
                     });
                 }
             }
- 
+
             function currentCountdown(endDateTime) {
                 return parseInt((endDateTime - Date.now()) / 1000, 10);
             }
