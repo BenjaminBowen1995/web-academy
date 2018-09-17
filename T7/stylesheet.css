@@ -13,6 +13,15 @@
   vertical-align: middle;
 }
 
+.small {
+  width: 15%;
+  margin: 5px;
+}
+
 #template {
   display: none;
+}
+
+.btn {
+  margin: 5px;
 }

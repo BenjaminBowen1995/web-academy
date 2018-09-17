@@ -6,6 +6,9 @@ var secInHour = 3600;
 var buttonClick = document.querySelector("#startButton");
 buttonClick.addEventListener("click", startButtonPressed, false);
 
+var clearClick = document.querySelector("#clearButton");
+clearClick.addEventListener("click", clearButtonPressed, false);
+
 function startButtonPressed(event) {
     event.preventDefault();
 
@@ -22,6 +25,13 @@ function startButtonPressed(event) {
       parseInt(durationInputS.value, 10) || 10];
 
     performCountdown(countdownFrom);
+}
+
+function clearButtonPressed(event) {
+    event.preventDefault();
+    localStorage.clear();
+    localStorage.removeItem("countdowns");
+    location.reload();
 }
 
 function performCountdown(duration) {
